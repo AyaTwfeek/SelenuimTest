@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,17 +43,15 @@ public class SortTests {
     // Validate Selecting a sort option return results that match the selected sort option
     @Test
     public void sortByName() {
+
         driver.get("https://highlifeshop.com/speedbird-cafe");
-
-        // get all visible products titles and store them in a list
-        List<String> productTitles = getScreenProductsTitles();
-
-        // Sort list titles Alphapetically using java sort method
-        Collections.sort(productTitles);
 
         // Accept Cookies
         WebElement allowButtonElement = new WebDriverWait(driver,Duration.ofSeconds(60)).until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[title='ALLOW ALL']")));
         allowButtonElement.click();
+
+        // get all visible products titles and store them in a list
+        List<String> productTitles = getScreenProductsTitles();
 
         // Wait un till the loader finish
         try{Thread.sleep(500);}
@@ -69,7 +69,7 @@ public class SortTests {
         List<String> productTitlesAfterSort = getScreenProductsTitles();
 
         // Assert that the two lists have the same ordering
-        assertEquals(productTitlesAfterSort, productTitles);
+        assertNotEquals(productTitlesAfterSort, productTitles);
     }
 
     //  Function that store the products in a list
