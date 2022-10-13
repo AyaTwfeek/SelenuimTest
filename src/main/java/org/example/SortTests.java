@@ -1,12 +1,11 @@
-package dev.selenium.getting_started;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+package org.example;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import org.apache.log4j.BasicConfigurator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.log4j.BasicConfigurator;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SortTests {
 
@@ -24,7 +24,8 @@ public class SortTests {
 
     @BeforeAll
     public static void setDriver() {
-        WebDriverManager.chromedriver().setup();
+        BasicConfigurator.configure();
+        System.setProperty("webdriver.chrome.driver","./drivers/chromedriver");
     }
 
     @BeforeEach
@@ -48,12 +49,20 @@ public class SortTests {
         // Sort list titles Alphapetically using java sort method
         Collections.sort(productTitles);
 
+        // Accept Cookies
+        WebElement allowButtonElement = new WebDriverWait(driver,Duration.ofSeconds(60)).until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[title='ALLOW ALL']")));
+        allowButtonElement.click();
+
+        // Wait un till the loader finish
+        try{Thread.sleep(500);}
+        catch(InterruptedException e){System.out.println(e);}
+
         // Click on sort dropdown list
-        WebElement sortDropList = driver.findElement(By.id("sorter"));
+        WebElement sortDropList = new WebDriverWait(driver,Duration.ofSeconds(60)).until(ExpectedConditions.elementToBeClickable(By.cssSelector("div[class='toolbar-sorter sorter']")));
         sortDropList.click();
 
         // Change sorting criteria to be by name
-        WebElement sortByNameOption = sortDropList.findElement(By.cssSelector("option[value='name']"));
+        WebElement sortByNameOption = new WebDriverWait(driver,Duration.ofSeconds(60)).until(ExpectedConditions.elementToBeClickable(By.cssSelector("option[value='name']")));
         sortByNameOption.click();
 
        // Store the products after sorting in another list
@@ -71,7 +80,7 @@ public class SortTests {
             // select element with title
             WebElement currentProduct = productsList.get(i);
             WebElement titleLink =  currentProduct.findElement(
-                    By.cssSelector("//div[@class='product details product-item-details']//strong[@class='product name product-item-name']//a")
+                    By.cssSelector("a[class='product-item-link']")
             );
             titles.add(titleLink.getText());
         }
